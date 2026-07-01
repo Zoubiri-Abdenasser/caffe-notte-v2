@@ -10,7 +10,10 @@ import jwt from 'jsonwebtoken'
 dotenv.config()
 
 const app = express()
-app.use(cors())
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  credentials: true,
+}))
 app.use(express.json())
 
 // الاتصال بقاعدة البيانات (للعمليات العامة)
@@ -71,12 +74,13 @@ app.post('/api/reservations', reservationLimiter, async (req, res) => {
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.issues[0].message })
   }
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('reservations')
     .insert([parsed.data])
     .select()
   if (error) {
-    return res.status(500).json({ error: 'حدث خطأ أثناء حفظ الحجز' })
+    console.error('Supabase error:', JSON.stringify(error, null, 2))
+    return res.status(500).json({ error: 'حدث خطأ أثناء حفظ الحجز', details: error })
   }
   res.status(201).json({ message: 'تم حفظ الحجز بنجاح', data })
 })
