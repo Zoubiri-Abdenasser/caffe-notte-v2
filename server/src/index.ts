@@ -11,9 +11,11 @@ dotenv.config()
 
 const app = express()
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
-  credentials: true,
-}))
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://caffe-notte-v2.vercel.app',
+  ],
 app.use(express.json())
 
 // الاتصال بقاعدة البيانات (للعمليات العامة)
