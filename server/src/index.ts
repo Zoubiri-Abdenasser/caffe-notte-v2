@@ -10,34 +10,34 @@ import jwt from 'jsonwebtoken'
 dotenv.config()
 
 const app = express()
+
 app.use(cors({
   origin: [
     'http://localhost:5173',
     'http://localhost:5174',
     'https://caffe-notte-v2.vercel.app',
   ],
+  credentials: true,
+}))
+
 app.use(express.json())
 
-// الاتصال بقاعدة البيانات (للعمليات العامة)
 const supabase = createClient(
   process.env.SUPABASE_URL as string,
   process.env.SUPABASE_KEY as string
 )
 
-// الاتصال بقاعدة البيانات (للعمليات الإدارية)
 const supabaseAdmin = createClient(
   process.env.SUPABASE_URL as string,
   process.env.SUPABASE_SERVICE_KEY as string
 )
 
-// حماية من السبام
 const reservationLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   message: { error: 'عدد محاولات كبير جدًا، حاول لاحقًا' },
 })
 
-// مخططات التحقق من المدخلات
 const reservationSchema = z.object({
   name: z.string().min(2, 'الاسم قصير جدًا'),
   phone: z.string().min(8, 'رقم جوال غير صحيح'),
@@ -52,7 +52,6 @@ const authSchema = z.object({
   name: z.string().min(2, 'الاسم قصير جدًا').optional(),
 })
 
-// Middleware: التحقق من التوكن
 const requireAuth = (req: any, res: any, next: any) => {
   const authHeader = req.headers.authorization
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -68,9 +67,6 @@ const requireAuth = (req: any, res: any, next: any) => {
   }
 }
 
-// ======= نقاط API =======
-
-// حجز طاولة (عام)
 app.post('/api/reservations', reservationLimiter, async (req, res) => {
   const parsed = reservationSchema.safeParse(req.body)
   if (!parsed.success) {
@@ -82,12 +78,11 @@ app.post('/api/reservations', reservationLimiter, async (req, res) => {
     .select()
   if (error) {
     console.error('Supabase error:', JSON.stringify(error, null, 2))
-    return res.status(500).json({ error: 'حدث خطأ أثناء حفظ الحجز', details: error })
+    return res.status(500).json({ error: 'حدث خطأ أثناء حفظ الحجز' })
   }
   res.status(201).json({ message: 'تم حفظ الحجز بنجاح', data })
 })
 
-// عرض الحجوزات (للمالك فقط)
 app.get('/api/reservations', requireAuth, async (req, res) => {
   const { data, error } = await supabaseAdmin
     .from('reservations')
@@ -99,7 +94,6 @@ app.get('/api/reservations', requireAuth, async (req, res) => {
   res.json(data)
 })
 
-// تسجيل المالك (مرة واحدة فقط)
 app.post('/api/auth/register', async (req, res) => {
   const parsed = authSchema.safeParse(req.body)
   if (!parsed.success) {
@@ -123,7 +117,6 @@ app.post('/api/auth/register', async (req, res) => {
   res.status(201).json({ message: 'تم تسجيل المالك بنجاح' })
 })
 
-// تسجيل الدخول
 app.post('/api/auth/login', async (req, res) => {
   const parsed = authSchema.safeParse(req.body)
   if (!parsed.success) {
