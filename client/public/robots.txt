@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /login
+
+Sitemap: https://caffe-notte-v2.vercel.app/sitemap.xml
