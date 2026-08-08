@@ -1,28 +1,29 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { api } from '../api/client'
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('coffee')
-  const [formMsg, setFormMsg] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
+ const [activeTab, setActiveTab] = useState('coffee')
+const [formMsg, setFormMsg] = useState('')
+const [loading, setLoading] = useState(false)
+const [menuOpen, setMenuOpen] = useState(false)
+const [menuItems, setMenuItems] = useState<{
+  id: number
+  name: string
+  description: string
+  price: number
+  category: string
+  available: boolean
+}[]>([])
 
-  const menu: Record<string, { name: string; desc: string; price: string }[]> = {
-    coffee: [
-      { name: 'إسبريسو دوبيو', desc: 'حبوب إيطالية محمّصة طازجة', price: '14 ر.س' },
-      { name: 'كابتشينو', desc: 'إسبريسو مع حليب مخفوق كثيف', price: '18 ر.س' },
-      { name: 'فلات وايت', desc: 'إسبريسو مزدوج مع حليب مخملي', price: '20 ر.س' },
-      { name: 'أفوكاتو', desc: 'إسبريسو ساخن فوق آيس كريم فانيليا', price: '24 ر.س' },
-    ],
-    pastries: [
-      { name: 'كرواسون بالزبدة', desc: 'مخبوز طازج يوميًا', price: '12 ر.س' },
-      { name: 'تيراميسو', desc: 'حلى إيطالي بالماسكاربوني والقهوة', price: '26 ر.س' },
-      { name: 'كانولي صقلّي', desc: 'محشو بكريمة الريكوتا والشوكولاتة', price: '16 ر.س' },
-    ],
-    specials: [
-      { name: 'نوتّي لاتيه', desc: 'مزيج خاص بالبندق والكراميل', price: '22 ر.س' },
-      { name: 'كولد برو', desc: 'قهوة مثلجة بتخمير بارد 18 ساعة', price: '19 ر.س' },
-    ],
+useEffect(() => {
+  api.get('/api/menu').then((res) => setMenuItems(res.data)).catch(() => {})
+}, [])
+
+const menu = {
+  coffee: menuItems.filter(i => i.category === 'coffee' && i.available),
+  pastries: menuItems.filter(i => i.category === 'pastries' && i.available),
+  specials: menuItems.filter(i => i.category === 'specials' && i.available),
+}
   }
 
   const tabs = [
@@ -179,8 +180,24 @@ export default function Home() {
 
           {/* Items */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-            {menu[activeTab].map((item) => (
-              <div key={item.name}
+            {menu[activeTab as keyof typeof menu].length === 0 ? (
+  <div className="col-span-2 text-center py-8 text-[#6B3F2A]">
+    لا توجد أطباق في هذه الفئة حالياً
+  </div>
+) : (
+  menu[activeTab as keyof typeof menu].map((item) => (
+    <div key={item.id}
+      className="flex justify-between items-start py-5 px-4 border-b border-[#E8D5B7] hover:bg-white/50 transition-colors duration-150 rounded-lg">
+      <div>
+        <div className="font-semibold text-[#2C1810]">{item.name}</div>
+        <div className="text-sm text-[#6B3F2A] mt-1">{item.description}</div>
+      </div>
+      <span className="font-bold text-[#C8973F] whitespace-nowrap mr-4">
+        {item.price} ر.س
+      </span>
+    </div>
+  ))
+)}
                 className="flex justify-between items-start py-5 px-4 border-b border-[#E8D5B7] hover:bg-white/50 transition-colors duration-150 rounded-lg">
                 <div>
                   <div className="font-semibold text-[#2C1810]">{item.name}</div>

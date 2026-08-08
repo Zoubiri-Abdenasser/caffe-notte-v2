@@ -143,7 +143,66 @@ app.post('/api/auth/login', async (req, res) => {
   )
   res.json({ message: 'تم تسجيل الدخول بنجاح', token, name: admin.name })
 })
+// مخطط التحقق من بيانات الطبق
+const menuItemSchema = z.object({
+  name: z.string().min(2, 'اسم الطبق قصير جدًا'),
+  description: z.string().optional(),
+  price: z.number().min(0, 'السعر يجب أن يكون أكبر من 0'),
+  category: z.enum(['coffee', 'pastries', 'specials'], {
+    errorMap: () => ({ message: 'الفئة غير صحيحة' })
+  }),
+  available: z.boolean().optional().default(true),
+})
 
+// GET /api/menu - عام (يجلب كل الأطباق المتاحة)
+app.get('/api/menu', async (req, res) => {
+  const { data, error } = await supabaseAdmin
+    .from('menu_items')
+    .select('*')
+    .order('category')
+    .order('id')
+  if (error) return res.status(500).json({ error: 'خطأ في جلب القائمة' })
+  res.json(data)
+})
+
+// POST /api/menu - محمي (إضافة طبق جديد)
+app.post('/api/menu', requireAuth, async (req, res) => {
+  const parsed = menuItemSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.issues[0].message })
+  }
+  const { data, error } = await supabaseAdmin
+    .from('menu_items')
+    .insert([parsed.data])
+    .select()
+  if (error) return res.status(500).json({ error: 'خطأ في إضافة الطبق' })
+  res.status(201).json({ message: 'تم إضافة الطبق بنجاح', data })
+})
+
+// PUT /api/menu/:id - محمي (تعديل طبق)
+app.put('/api/menu/:id', requireAuth, async (req, res) => {
+  const parsed = menuItemSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.issues[0].message })
+  }
+  const { data, error } = await supabaseAdmin
+    .from('menu_items')
+    .update(parsed.data)
+    .eq('id', req.params.id)
+    .select()
+  if (error) return res.status(500).json({ error: 'خطأ في تعديل الطبق' })
+  res.json({ message: 'تم تعديل الطبق بنجاح', data })
+})
+
+// DELETE /api/menu/:id - محمي (حذف طبق)
+app.delete('/api/menu/:id', requireAuth, async (req, res) => {
+  const { error } = await supabaseAdmin
+    .from('menu_items')
+    .delete()
+    .eq('id', req.params.id)
+  if (error) return res.status(500).json({ error: 'خطأ في حذف الطبق' })
+  res.json({ message: 'تم حذف الطبق بنجاح' })
+})
 const PORT = process.env.PORT || 4000
 app.listen(PORT, () => {
   console.log(`السيرفر يعمل على http://localhost:${PORT}`)

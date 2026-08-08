@@ -46,6 +46,10 @@ export default function Admin() {
             <span className="text-[#E8D5B7] text-sm hidden sm:block">
               مرحباً، {adminName}
             </span>
+            <button onClick={() => navigate('/admin/menu')}
+              className="border border-[#E8D5B7]/40 text-[#E8D5B7] px-4 py-2 rounded-lg text-sm hover:bg-white/10 transition-colors">
+              إدارة القائمة
+</button>
             <button onClick={handleLogout}
               className="border border-[#E8D5B7]/40 text-[#E8D5B7] px-4 py-2 rounded-lg text-sm hover:bg-white/10 transition-colors">
               تسجيل خروج
