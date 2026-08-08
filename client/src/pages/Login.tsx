@@ -26,53 +26,71 @@ export default function Login() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh', background: '#0E0B09',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: 'sans-serif', padding: 20,
-    }}>
-      <form onSubmit={handleSubmit} style={{
-        background: '#1B1410', padding: '40px 36px', borderRadius: 8,
-        border: '1px solid rgba(242,233,221,0.1)', width: 320, textAlign: 'center',
-      }}>
-        <h2 style={{ color: '#4DFFD2', marginBottom: 24, fontSize: '1.5rem' }}>
-          دخول الإدارة
-        </h2>
-        <input
-          type="email"
-          placeholder="البريد الإلكتروني"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{
-            width: '100%', padding: '12px 14px', borderRadius: 4,
-            marginBottom: 14, background: '#241B15',
-            border: '1px solid rgba(242,233,221,0.15)', color: '#F2E9DD',
-            fontFamily: 'sans-serif',
-          }}
-        />
-        <input
-          type="password"
-          placeholder="كلمة المرور"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{
-            width: '100%', padding: '12px 14px', borderRadius: 4,
-            marginBottom: 14, background: '#241B15',
-            border: '1px solid rgba(242,233,221,0.15)', color: '#F2E9DD',
-            fontFamily: 'sans-serif',
-          }}
-        />
-        <button type="submit" disabled={loading} style={{
-          width: '100%', padding: 12, borderRadius: 4,
-          background: '#4DFFD2', color: '#0E0B09',
-          fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '1rem',
-        }}>
-          {loading ? 'جاري الدخول...' : 'دخول'}
-        </button>
-        {error && <p style={{ color: '#FFB23F', marginTop: 14, fontSize: '.85rem' }}>{error}</p>}
-      </form>
+    <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center px-4" dir="rtl">
+      <div className="w-full max-w-md">
+
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <h1 className="font-[Playfair Display,serif] italic text-4xl text-[#2C1810]">
+            Caffè <span className="text-[#C8973F]">Notte</span>
+          </h1>
+          <p className="text-[#6B3F2A] text-sm mt-2">دخول لوحة التحكم</p>
+        </div>
+
+        {/* Card */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-[#E8D5B7]">
+          <h2 className="font-[Playfair Display,serif] text-2xl text-[#2C1810] mb-6 text-center">
+            تسجيل الدخول
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-[#2C1810] mb-2">
+                البريد الإلكتروني
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@restaurant.com"
+                required
+                className="w-full border border-[#E8D5B7] rounded-xl px-4 py-3 text-sm bg-[#FAF7F2] focus:outline-none focus:border-[#C8973F] focus:ring-1 focus:ring-[#C8973F] transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#2C1810] mb-2">
+                كلمة المرور
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                className="w-full border border-[#E8D5B7] rounded-xl px-4 py-3 text-sm bg-[#FAF7F2] focus:outline-none focus:border-[#C8973F] focus:ring-1 focus:ring-[#C8973F] transition-all"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm text-center">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#C8973F] text-white font-bold py-4 rounded-xl hover:bg-[#A67C32] transition-colors duration-200 shadow-md disabled:opacity-60 mt-2">
+              {loading ? 'جاري الدخول...' : 'دخول'}
+            </button>
+          </form>
+        </div>
+
+        <p className="text-center text-xs text-[#6B3F2A]/60 mt-6">
+          Caffè Notte © 2026
+        </p>
+      </div>
     </div>
   )
 }
