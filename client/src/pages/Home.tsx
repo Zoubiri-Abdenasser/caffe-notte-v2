@@ -2,28 +2,27 @@ import { useState, useEffect } from 'react'
 import { api } from '../api/client'
 
 export default function Home() {
- const [activeTab, setActiveTab] = useState('coffee')
-const [formMsg, setFormMsg] = useState('')
-const [loading, setLoading] = useState(false)
-const [menuOpen, setMenuOpen] = useState(false)
-const [menuItems, setMenuItems] = useState<{
-  id: number
-  name: string
-  description: string
-  price: number
-  category: string
-  available: boolean
-}[]>([])
+  const [activeTab, setActiveTab] = useState('coffee')
+  const [formMsg, setFormMsg] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [menuItems, setMenuItems] = useState<{
+    id: number
+    name: string
+    description: string
+    price: number
+    category: string
+    available: boolean
+  }[]>([])
 
-useEffect(() => {
-  api.get('/api/menu').then((res) => setMenuItems(res.data)).catch(() => {})
-}, [])
+  useEffect(() => {
+    api.get('/api/menu').then((res) => setMenuItems(res.data)).catch(() => {})
+  }, [])
 
-const menu = {
-  coffee: menuItems.filter(i => i.category === 'coffee' && i.available),
-  pastries: menuItems.filter(i => i.category === 'pastries' && i.available),
-  specials: menuItems.filter(i => i.category === 'specials' && i.available),
-}
+  const menu = {
+    coffee: menuItems.filter(i => i.category === 'coffee' && i.available),
+    pastries: menuItems.filter(i => i.category === 'pastries' && i.available),
+    specials: menuItems.filter(i => i.category === 'specials' && i.available),
   }
 
   const tabs = [
@@ -181,31 +180,23 @@ const menu = {
           {/* Items */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             {menu[activeTab as keyof typeof menu].length === 0 ? (
-  <div className="col-span-2 text-center py-8 text-[#6B3F2A]">
-    لا توجد أطباق في هذه الفئة حالياً
-  </div>
-) : (
-  menu[activeTab as keyof typeof menu].map((item) => (
-    <div key={item.id}
-      className="flex justify-between items-start py-5 px-4 border-b border-[#E8D5B7] hover:bg-white/50 transition-colors duration-150 rounded-lg">
-      <div>
-        <div className="font-semibold text-[#2C1810]">{item.name}</div>
-        <div className="text-sm text-[#6B3F2A] mt-1">{item.description}</div>
-      </div>
-      <span className="font-bold text-[#C8973F] whitespace-nowrap mr-4">
-        {item.price} ر.س
-      </span>
-    </div>
-  ))
-)}
-                className="flex justify-between items-start py-5 px-4 border-b border-[#E8D5B7] hover:bg-white/50 transition-colors duration-150 rounded-lg">
-                <div>
-                  <div className="font-semibold text-[#2C1810]">{item.name}</div>
-                  <div className="text-sm text-[#6B3F2A] mt-1">{item.desc}</div>
-                </div>
-                <span className="font-bold text-[#C8973F] whitespace-nowrap mr-4">{item.price}</span>
+              <div className="col-span-2 text-center py-8 text-[#6B3F2A]">
+                لا توجد أطباق في هذه الفئة حالياً
               </div>
-            ))}
+            ) : (
+              menu[activeTab as keyof typeof menu].map((item) => (
+                <div key={item.id}
+                  className="flex justify-between items-start py-5 px-4 border-b border-[#E8D5B7] hover:bg-white/50 transition-colors duration-150 rounded-lg">
+                  <div>
+                    <div className="font-semibold text-[#2C1810]">{item.name}</div>
+                    <div className="text-sm text-[#6B3F2A] mt-1">{item.description}</div>
+                  </div>
+                  <span className="font-bold text-[#C8973F] whitespace-nowrap mr-4">
+                    {item.price} ر.س
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
