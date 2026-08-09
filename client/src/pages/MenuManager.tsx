@@ -30,15 +30,23 @@ export default function MenuManager() {
   const navigate = useNavigate()
 
   const fetchItems = async () => {
-    try {
-      const res = await api.get('/api/menu')
-      setItems(res.data)
-    } catch {
+  try {
+    const res = await api.get('/api/menu')
+    setItems(res.data)
+  } catch (err: any) {
+    // لا نسجّل خروج إلا لو الخطأ 401 (توكن منتهي فعلاً)
+    if (err.response?.status === 401) {
+      localStorage.removeItem('token')
       navigate('/login')
-    } finally {
-      setLoading(false)
+    } else {
+      // خطأ مؤقت (سيرفر نائم أو مشكلة شبكة) — نعيد المحاولة
+      console.error('خطأ مؤقت، إعادة المحاولة...')
+      setTimeout(() => fetchItems(), 3000)
     }
+  } finally {
+    setLoading(false)
   }
+}
 
   useEffect(() => { fetchItems() }, [])
 

@@ -24,7 +24,12 @@ export default function Admin() {
     if (!token) { navigate('/login'); return }
     api.get('/api/reservations')
       .then((res) => { setReservations(res.data); setLoading(false) })
-      .catch(() => { localStorage.removeItem('token'); navigate('/login') })
+      ..catch((err: any) => {
+  if (err.response?.status === 401) {
+    localStorage.removeItem('token')
+    navigate('/login')
+  }
+})
   }, [navigate])
 
   const handleLogout = () => {
