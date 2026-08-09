@@ -148,9 +148,9 @@ const menuItemSchema = z.object({
   name: z.string().min(2, 'اسم الطبق قصير جدًا'),
   description: z.string().optional(),
   price: z.number().min(0, 'السعر يجب أن يكون أكبر من 0'),
-  category: z.enum(['coffee', 'pastries', 'specials'], {
-    errorMap: () => ({ message: 'الفئة غير صحيحة' })
-  }),
+  category: z.enum(['coffee', 'pastries', 'specials'] as const, {
+  message: 'الفئة غير صحيحة'
+}),
   available: z.boolean().optional().default(true),
 })
 
