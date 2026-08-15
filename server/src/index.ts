@@ -204,6 +204,25 @@ app.delete('/api/menu/:id', requireAuth, async (req, res) => {
   res.json({ message: 'تم حذف الطبق بنجاح' })
 })
 const PORT = process.env.PORT || 4000
+const SERVER_URL = process.env.SERVER_URL || `http://localhost:${PORT}`
+
 app.listen(PORT, () => {
   console.log(`السيرفر يعمل على http://localhost:${PORT}`)
+
+  // Keep-Alive: يمنع Render من إيقاف السيرفر
+  if (process.env.NODE_ENV === 'production') {
+    setInterval(async () => {
+      try {
+        const response = await fetch(`${SERVER_URL}/health`)
+        console.log(`Keep-alive ping: ${response.status}`)
+      } catch (err) {
+        console.log('Keep-alive failed:', err)
+      }
+    }, 10 * 60 * 1000) // كل 10 دقائق
+  }
+})
+
+// نقطة health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
